@@ -79,5 +79,7 @@ Here's a graph of memory utilisation during a test run, you can clearly see wher
 ## References
 
 https://dba.stackexchange.com/questions/160887/how-can-i-find-the-source-of-postgresql-per-connection-memory-leaks/222815#222815
+
 https://stackoverflow.com/questions/5587830/postgresql-backend-process-high-memory-usage-issue
+
 https://italux.medium.com/postgresql-out-of-memory-3fc1105446d
