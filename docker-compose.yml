@@ -1,0 +1,28 @@
+version: "3.4"
+
+services:
+  postgres:
+    image: postgres:14
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./log:/root/log:cached
+    environment:
+      - PSQL_HISTFILE=/root/log/.psql_history
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5555:5432"
+    # limit cache size to 1GB (50%) and shared buffers to 512MB (25%) - conservative recommendations from Postgres Wiki
+    # see https://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server#shared_buffers
+    command: postgres -c effective_cache_size=1GB -c shared_buffers=512MB
+    healthcheck:
+      test: pg_isready -U postgres -h 127.0.0.1
+      interval: 5s
+    networks:
+      - default
+    deploy:
+      resources:
+        limits:
+          memory: "2G"
+
+volumes:
+  postgres:

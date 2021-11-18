@@ -1,0 +1,59 @@
+class Tables < ActiveRecord::Migration[6.1]
+  disable_ddl_transaction!
+
+  def change
+    3000.times do |index|
+      ActiveRecord::Base.connection.create_schema("schema-#{index + 1}")
+    end
+
+    3000.times do |index|
+      ActiveRecord::Base.connection.schema_search_path = "\"#{"schema-#{index + 1}"}\", \"$user\", public"
+
+      # "$user", public
+      create_table :users do |t|
+        t.string :name, null: false, default: ""
+        t.string :email, null: false, default: ""
+        t.boolean :admin, null: false, default: false
+        t.timestamps null: false
+      end
+      add_index :users, :email, unique: true
+
+      create_table :contacts do |t|
+        t.string :first_name, null: false, default: ""
+        t.string :last_name, null: false, default: ""
+        t.string :email, null: false, default: ""
+        t.string :telephone, null: false, default: ""
+        t.timestamps null: false
+      end
+      add_index :contacts, [:first_name, :last_name], unique: true
+
+      create_table :products do |t|
+        t.string :name, null: false, default: ""
+        t.string :sku, null: false, default: ""
+        t.integer :quantity_in_stock, default: 0, null: false
+        t.timestamps null: false
+      end
+      add_index :products, :sku, unique: true
+
+      create_table :orders do |t|
+        t.string :number, null: false, default: ""
+        t.string :reference, null: false, default: ""
+        t.datetime :ordered_at
+        t.datetime :delivery_at
+        t.timestamps null: false
+
+        t.references :contact, index: true
+        t.references :user, index: true
+      end
+      add_index :orders, :number, unique: true
+
+      create_table :order_items do |t|
+        t.references :order, index: true
+        t.references :product, index: true
+        t.integer :quantity, default: 0, null: false
+        t.decimal :price, default: 0, null: false
+        t.timestamps null: false
+      end
+    end
+  end
+end
